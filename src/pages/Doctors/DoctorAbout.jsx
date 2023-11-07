@@ -67,7 +67,18 @@ export const DoctorAbout = () => {
               {formateDate("07-04-2010")} - {formateDate("08-13-2014")}
             </span>
             <p className="text-[16px] leading-6 font-medium text-textColor">
-              Senior Surgeon 
+              Senior Surgeon
+            </p>
+            <p className="text-[16px] leading-6 font-medium text-textColor">
+              Hospital of Cincinatti , Cincinatti
+            </p>
+          </li>
+          <li className="p-4 rounded bg-[#fff9ea]">
+            <span className="text-yellowColor tex-[15px] leading-6 font-semibold">
+              {formateDate("07-04-2010")} - {formateDate("08-13-2014")}
+            </span>
+            <p className="text-[16px] leading-6 font-medium text-textColor">
+              Senior Surgeon
             </p>
             <p className="text-[16px] leading-6 font-medium text-textColor">
               Hospital of Cincinatti , Cincinatti
