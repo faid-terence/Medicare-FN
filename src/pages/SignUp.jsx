@@ -1,11 +1,16 @@
 import signUpImg from "../assets/images/signup.gif";
 import avartar from "../assets/images/doctor-img01.png";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import uploadImageToCloudinary from "../utilities/uploadCloudinary.js";
+import { BASE_URL } from "../Config.js";
+import { toast } from "react-toastify";
+import { HashLoader } from "react-spinners";
 
 export const SignUp = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,18 +19,58 @@ export const SignUp = () => {
     gender: "",
     role: "patient",
   });
+
+  const navigate = useNavigate();
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileInputChange = (e) => {
-    const file = event.target.files[0];
+  const handleFileInputChange = async (event) => {
+    try {
+      const file = event.target.files[0];
 
-    console.log(file);
+      if (!file) {
+        // Handle the case where no file is selected
+        return;
+      }
+
+      const data = await uploadImageToCloudinary(file);
+
+      setPreviewUrl(data.url);
+      setSelectedFile(data.url);
+      setFormData({ ...formData, photo: data.url });
+    } catch (error) {
+      // Handle any errors that might occur during the image upload or processing
+      console.error("Error uploading image:", error);
+    }
   };
 
   const submitHandler = async (event) => {
     event.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${BASE_URL}/auth/register`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const { message } = await response.json();
+
+      if (!response.ok) {
+        throw new Error(message);
+      }
+      setLoading(false);
+      toast.success(message);
+      navigate("/auth/signin");
+    } catch (error) {
+      toast.error(error.message);
+      setLoading(false);
+    }
   };
   return (
     <section className="px-5 xl:px-0">
@@ -46,7 +91,7 @@ export const SignUp = () => {
               Create an <span className="text-primaryColor"> account </span>
             </h3>
 
-            <form action="" onSubmit={submitHandler}> 
+            <form action="" onSubmit={submitHandler}>
               <div className="mb-5">
                 <input
                   type="text"
@@ -75,6 +120,7 @@ export const SignUp = () => {
                   placeholder="Create a strong Password"
                   name="password"
                   value={formData.password}
+                  onChange={handleInputChange}
                   className="w-full pr-4 py-3 border-b border-solid border-[#0066ff61] focus:outline-none placeholder:text-textColor cursor-pointer"
                   required
                 />
@@ -109,17 +155,21 @@ export const SignUp = () => {
                   </select>
                 </label>
               </div>
-
               <div className="mb-5 flex items-center gap-3">
-                <figure className="w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center">
-                  <img src={avartar} alt="" className="w-full rounded-full" />
-                </figure>
+                {previewUrl && (
+                  <figure className="w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center">
+                    <img
+                      src={previewUrl}
+                      alt=""
+                      className="w-full rounded-full"
+                    />
+                  </figure>
+                )}
 
                 <div className="relative w-[130px] h-[50px]">
                   <input
                     type="file"
                     name="photo"
-                    value={formData.photo}
                     onChange={handleFileInputChange}
                     id="customFile"
                     accept=".jpg, .png, .jpeg"
@@ -136,10 +186,15 @@ export const SignUp = () => {
 
               <div className="mt-7">
                 <button
+                  disabled={loading}
                   type="submit"
-                  className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3"
+                  className="w-full bg-primaryColor text-white text-18 leading-30 rounded-lg px-4 py-3"
                 >
-                  SIGN UP!
+                  {loading ? (
+                    <HashLoader size={35} color="#ffffff" />
+                  ) : (
+                    "SIGN UP!"
+                  )}
                 </button>
               </div>
 
