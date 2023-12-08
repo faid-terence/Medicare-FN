@@ -1,9 +1,8 @@
 import logo from "../../assets/images/logo.png";
-import UserImg from "../../assets/images/avatar-icon.png";
 import { useEffect, useRef, useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { BiMenu } from "react-icons/bi";
-import { authContext } from "../../../context/AuthContext.jsx";
+import { authContext } from "../../context/AuthContext";
 
 const navLinks = [
   {
