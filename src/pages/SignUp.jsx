@@ -1,6 +1,5 @@
 import signUpImg from "../assets/images/signup.gif";
-import avartar from "../assets/images/doctor-img01.png";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import uploadImageToCloudinary from "../utilities/uploadCloudinary.js";
 import { BASE_URL } from "../Config.js";
